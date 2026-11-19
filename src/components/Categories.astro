@@ -1,0 +1,23 @@
+---
+// src/components/Categories.astro
+import type { Category } from '../lib/types';
+
+interface Props {
+  categories: Category[];
+}
+
+const { categories } = Astro.props;
+---
+<div class="mb-10">
+  <ul class="text-sm font-semibold uppercase flex gap-3 flex-wrap">
+  {categories.map((category) => (
+      <li class="flex flex-shrink-0">
+        <a href={`/posts?categories=${category.id}`}
+          class="bg-white hover:bg-ocean-500 hover:text-white text-ocean-900 border border-ocean-100 px-5 py-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+        >
+          {category.name}
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>

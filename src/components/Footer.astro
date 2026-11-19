@@ -1,0 +1,20 @@
+---
+// src/components/Footer.astro
+import { SITE_NAME } from "astro:env/server";
+
+const siteName = SITE_NAME || "TSBlog";
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="mt-12 bg-black text-white">
+  <div class="border-t border-white/10 px-4 py-8 text-center text-xs">
+    <nav class="mb-4 flex flex-wrap justify-center gap-5 font-bold">
+      <a href="/" class="hover:text-sky-400">Home</a>
+      <a href="/posts" class="hover:text-sky-400">News</a>
+      <a href="/posts" class="hover:text-sky-400">Archaeology </a>
+      <a href="/posts" class="hover:text-sky-400">Showbiz</a>
+      <a href="/sitemap.xml" class="hover:text-sky-400">SiteMap</a>
+    </nav>
+    <p>&copy; {currentYear} {siteName}</p>
+  </div>
+</footer>

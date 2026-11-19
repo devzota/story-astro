@@ -1,0 +1,182 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Sidebar from "../../components/Sidebar.astro";
+import {
+  getPostBySlug,
+  getAuthorById,
+  getCategoriesByIds,
+  getAllPosts,
+  getCategories,
+} from "../../lib/queries";
+import { getPostImage, stripHtml } from "../../lib/media";
+
+import { WORDPRESS_URL } from "astro:env/server";
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect("/404");
+
+const post = await getPostBySlug(slug as string);
+
+if (!post) {
+  Astro.response.status = 404;
+  return Astro.redirect("/404");
+}
+
+const author = await getAuthorById(post.author);
+const categories = await getCategoriesByIds(post.categories);
+const { posts: recentPosts } = await getAllPosts(1, 5);
+const allCategories = await getCategories();
+
+const formattedDate = new Date(post.date);
+const date = formattedDate.toLocaleString("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+const currentSiteUrl = Astro.url.origin;
+const wordpressDomain = WORDPRESS_URL;
+
+const replaceImage = (url: string) => {
+  if (!url || !wordpressDomain) return url;
+  const regex = new RegExp(wordpressDomain + "/wp-content/", "g");
+  return url.replace(regex, currentSiteUrl + "/images/");
+};
+
+const yoast = post.yoast_head_json;
+
+const ogImages = yoast?.og_image
+  ? yoast.og_image.map((img) => ({
+      url: replaceImage(img.url),
+      width: img.width,
+      height: img.height,
+    }))
+  : [{ url: "/open-graph.jpg" }]; // Fallback image
+
+const title = yoast?.title || post.title.rendered;
+const description = yoast?.og_description || stripHtml(post.excerpt.rendered);
+const canonical = yoast?.canonical
+  ? yoast.canonical.replace(
+      new RegExp(wordpressDomain as string, "g"),
+      currentSiteUrl + "/posts",
+    )
+  : Astro.url.href;
+const robots = yoast?.robots
+  ? {
+      index: yoast.robots.index === "index",
+      follow: yoast.robots.follow === "follow",
+    }
+  : { index: true, follow: true };
+const image = ogImages[0]?.url;
+const featuredImage =
+  getPostImage(post, currentSiteUrl, WORDPRESS_URL) || image;
+const renderedContent = replaceImage(post.content.rendered);
+const showFeaturedImage =
+  featuredImage && !renderedContent.includes(featuredImage);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  robots={robots}
+  image={image}
+  type="article"
+>
+  <div
+    class="mx-auto grid max-w-[1140px] gap-6 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_320px]"
+  >
+    <main class="bg-white p-5 md:p-6">
+      <div class="mb-5 flex flex-wrap gap-2">
+        {
+          categories.map((category) => (
+            <a
+              class="bg-sky-500 px-2 py-1 text-xs font-bold text-white hover:bg-sky-600"
+              href={`/posts?categories=${category.id}`}
+            >
+              {category.name}
+            </a>
+          ))
+        }
+      </div>
+
+      <h1
+        class="mb-3 text-3xl font-bold leading-tight md:text-4xl"
+        set:html={post.title.rendered}
+      />
+
+      <div class="mb-8 text-sm text-slate-700">
+        Posted by <b>{author?.name || "John Doe"}</b> - <span>{date}</span>
+      </div>
+
+      {
+        showFeaturedImage && (
+          <img
+            src={featuredImage}
+            alt=""
+            loading="eager"
+            class="mb-8 h-auto w-full rounded-sm object-cover"
+          />
+        )
+      }
+
+      <div class="article" set:html={renderedContent} />
+
+      <div class="mt-10 flex flex-wrap gap-2">
+        {
+          categories.map((category) => (
+            <a
+              class="rounded-sm bg-slate-100 px-3 py-1 text-xs text-slate-600 hover:bg-sky-500 hover:text-white"
+              href={`/posts?categories=${category.id}`}
+            >
+              {category.slug}
+            </a>
+          ))
+        }
+      </div>
+
+      <section class="mt-8 border border-slate-100 p-5">
+        <h2 class="flex items-center gap-3 text-lg font-bold">
+          <span
+            class="grid h-8 w-8 place-items-center rounded-full bg-sky-500 text-white"
+            >✓</span
+          >
+          {author?.name || "John Doe"}
+        </h2>
+        <p class="mt-3 text-slate-600">{stripHtml(post.excerpt.rendered)}</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="mb-5 text-xl font-bold">Leave a Reply</h2>
+        <form class="space-y-4">
+          <label class="block text-sm font-medium">
+            Comment <span class="text-red-500">*</span>
+            <textarea
+              class="mt-2 h-36 w-full border border-slate-200 p-3 outline-none focus:border-sky-500"
+            ></textarea>
+          </label>
+          <label class="block text-sm font-medium">
+            Name <span class="text-red-500">*</span>
+            <input
+              class="mt-2 h-11 w-full border border-slate-200 px-3 outline-none focus:border-sky-500"
+            />
+          </label>
+          <label class="block text-sm font-medium">
+            Email <span class="text-red-500">*</span>
+            <input
+              type="email"
+              class="mt-2 h-11 w-full border border-slate-200 px-3 outline-none focus:border-sky-500"
+            />
+          </label>
+          <button
+            type="button"
+            class="bg-sky-500 px-7 py-3 font-bold text-white hover:bg-sky-600"
+            >Post Comment</button
+          >
+        </form>
+      </section>
+    </main>
+
+    <Sidebar posts={recentPosts} categories={allCategories} />
+  </div>
+</BaseLayout>

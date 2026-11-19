@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LatestPosts from '../../components/LatestPosts.astro';
+import { getAllPosts, getCategories } from '../../lib/queries';
+
+const searchParams = Astro.url.searchParams;
+const currentPage = searchParams.has('page') ? parseInt(searchParams.get('page') as string, 10) : 1;
+const postsPerPage = 10;
+const searchTerm = searchParams.get('search') || searchParams.get('s') || '';
+const categories = parseInt(searchParams.get('categories') || '0', 10);
+
+const { posts, totalPages } = await getAllPosts(currentPage, postsPerPage, searchTerm, categories);
+const categoryList = await getCategories();
+---
+
+<BaseLayout title="Blog Posts | TSBlog">
+  <LatestPosts
+    posts={posts}
+    currentPage={currentPage}
+    totalPages={totalPages}
+    searchTerm={searchTerm}
+    categories={categories}
+    categoryList={categoryList}
+  />
+</BaseLayout>

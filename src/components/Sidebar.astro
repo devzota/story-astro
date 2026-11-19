@@ -1,0 +1,135 @@
+---
+import type { Category, Post } from "../lib/types";
+import { formatPostDate, getPostImage } from "../lib/media";
+import SearchBar from "./SearchBar.astro";
+import { WORDPRESS_URL } from "astro:env/server";
+
+interface Props {
+  posts?: Post[];
+  categories?: Category[];
+}
+
+const { posts = [], categories = [] } = Astro.props;
+const recentPosts = posts.slice(0, 5);
+const currentSiteUrl = Astro.url.origin;
+
+const socials = [
+  ["Twitter", "#", "bg-sky-500"],
+  ["Facebook", "#", "bg-blue-600"],
+  ["Instagram", "#", "bg-pink-500"],
+  ["YouTube", "#", "bg-red-600"],
+  ["LinkedIn", "#", "bg-blue-700"],
+  ["Dribbble", "#", "bg-pink-400"],
+];
+---
+
+<aside class="space-y-5">
+  <section class="widget">
+    <h2 class="widget-title">Search</h2>
+    <SearchBar />
+  </section>
+
+  <section class="widget">
+    <h2 class="widget-title">Follow Us</h2>
+    <div class="grid grid-cols-2 gap-3">
+      {
+        socials.map(([name, href, color]) => (
+          <a
+            href={href}
+            class="flex items-center gap-2 text-sm text-slate-700 hover:text-sky-600"
+          >
+            <span class={`h-5 w-5 rounded-full ${color}`} />
+            {name}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    recentPosts.length > 0 && (
+      <section class="widget">
+        <h2 class="widget-title">Recent Posts</h2>
+        <div class="divide-y divide-slate-100">
+          {recentPosts.map((post) => {
+            const image = getPostImage(post, currentSiteUrl, WORDPRESS_URL);
+            return (
+              <a
+                href={`/${post.slug}`}
+                class="flex gap-3 py-4 first:pt-0 last:pb-0 group"
+              >
+                {image && (
+                  <img
+                    src={image}
+                    alt=""
+                    loading="lazy"
+                    class="h-16 w-20 flex-none rounded-sm object-cover"
+                  />
+                )}
+                <span>
+                  <span
+                    class="block text-sm font-bold leading-tight text-slate-950 group-hover:text-sky-600"
+                    set:html={post.title.rendered}
+                  />
+                  <span class="mt-1 block text-xs text-slate-400">
+                    {formatPostDate(post.date)}
+                  </span>
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    categories.length > 0 && (
+      <section class="widget">
+        <h2 class="widget-title">Categories</h2>
+        <div class="divide-y divide-slate-100">
+          {categories.map((category) => (
+            <a
+              href={`/posts?categories=${category.id}`}
+              class="flex items-center justify-between py-3 text-base hover:text-sky-600"
+            >
+              <span>{category.name}</span>
+              <span class="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+                {category.count}
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="widget">
+    <h2 class="widget-title">Tags</h2>
+    <div class="flex flex-wrap gap-2">
+      {
+        [
+          "ads",
+          "adwords",
+          "blog",
+          "books",
+          "copywriting",
+          "design",
+          "google",
+          "instagram",
+          "marketing",
+          "seo",
+          "twitter",
+          "wordpress",
+        ].map((tag) => (
+          <a
+            href={`/posts?search=${tag}`}
+            class="rounded bg-slate-100 px-2 py-1 text-xs text-slate-500 hover:bg-sky-500 hover:text-white"
+          >
+            {tag}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</aside>

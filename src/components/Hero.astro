@@ -1,0 +1,46 @@
+---
+import type { Post } from "../lib/types";
+import { getPostImage } from "../lib/media";
+import { WORDPRESS_URL } from "astro:env/server";
+
+interface Props {
+  posts?: Post[];
+}
+
+const { posts = [] } = Astro.props;
+const featuredPosts = posts.slice(0, 5);
+const currentSiteUrl = Astro.url.origin;
+---
+{featuredPosts.length > 0 && (
+  <section class="mb-6 grid gap-2 md:grid-cols-[1.08fr_1fr]">
+    {featuredPosts.slice(0, 1).map((post) => {
+      const image = getPostImage(post, currentSiteUrl, WORDPRESS_URL) || "/hero-placeholder.png";
+      return (
+        <a href={`/${post.slug}`} class="group relative min-h-[320px] overflow-hidden rounded-sm bg-slate-900">
+          <img src={image} alt="" loading="eager" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-5 text-white md:p-7">
+            <span class="mb-2 inline-flex bg-sky-500 px-2 py-1 text-xs font-bold">Featured</span>
+            <h1 class="text-2xl font-bold leading-tight md:text-3xl" set:html={post.title.rendered}></h1>
+          </div>
+        </a>
+      );
+    })}
+
+    <div class="grid gap-2 sm:grid-cols-2">
+      {featuredPosts.slice(1, 5).map((post) => {
+        const image = getPostImage(post, currentSiteUrl, WORDPRESS_URL) || "/hero-placeholder.png";
+        return (
+          <a href={`/${post.slug}`} class="group relative min-h-[155px] overflow-hidden rounded-sm bg-slate-900">
+            <img src={image} alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-4 text-white">
+              <span class="mb-2 inline-flex bg-sky-500 px-2 py-1 text-xs font-bold">Featured</span>
+              <h2 class="text-base font-bold leading-tight md:text-lg" set:html={post.title.rendered}></h2>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+)}

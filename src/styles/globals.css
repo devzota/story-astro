@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f3f4f6;
+  --foreground: #111827;
+}
+
+body {
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.widget {
+  @apply bg-white p-5;
+}
+
+.widget-title {
+  @apply mb-4 border-b border-slate-100 pb-3 text-xl font-bold;
+}
+
+/* WordPress Styles */
+.article {
+  h1 {
+    @apply my-6 text-3xl font-bold leading-tight text-slate-950;
+  }
+
+  h2 {
+    @apply my-6 text-2xl font-bold leading-tight text-slate-950;
+  }
+
+  h3 {
+    @apply my-5 text-xl font-bold leading-tight text-slate-950;
+  }
+
+  h4 {
+    @apply my-4 text-lg font-bold text-slate-950;
+  }
+
+  h5 {
+    @apply text-base font-medium text-slate-900 my-2;
+  }
+
+  h6 {
+    @apply text-base font-medium text-slate-900 my-1;
+  }
+
+  p {
+    @apply my-6 text-lg leading-8 text-slate-700;
+  }
+
+  a {
+    @apply text-sky-600 underline;
+  }
+  a:hover {
+    @apply text-sky-700;
+  }
+
+  blockquote {
+    @apply my-6 border-l-4 border-sky-500 bg-slate-50 py-3 pl-5 italic text-slate-600;
+  }
+
+  figure {
+    @apply my-6;
+  }
+
+  figcaption {
+    @apply text-sm text-center text-gray-500;
+  }
+
+  strong {
+    @apply font-semibold text-slate-900;
+  }
+
+  em {
+    @apply italic text-slate-900;
+  }
+
+  code {
+    @apply bg-gray-100 px-1 py-0.5 rounded text-sm font-mono text-slate-900;
+  }
+
+  pre {
+    @apply text-slate-900 text-white p-4 rounded overflow-x-auto my-4;
+  }
+
+  ol {
+    @apply list-decimal list-inside my-4 pl-5;
+  }
+
+  ul {
+    @apply list-disc list-inside my-4 pl-5;
+  }
+
+  li {
+    @apply my-2 text-lg leading-8 text-slate-700;
+  }
+
+  table {
+    @apply w-full border-collapse my-6;
+  }
+
+  thead {
+    @apply bg-gray-200 text-slate-900;
+  }
+
+  tr {
+    @apply border-b border-gray-300;
+  }
+
+  th, td {
+    @apply p-3 text-left;
+  }
+
+  th {
+    @apply font-semibold;
+  }
+
+  img {
+    @apply my-6 h-auto max-w-full rounded-sm;
+  }
+
+  video {
+    @apply max-w-full rounded my-4;
+  }
+
+  hr {
+    @apply border-t border-gray-300 my-6;
+  }
+
+  iframe {
+    width: 100%;
+  }
+}

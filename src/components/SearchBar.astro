@@ -1,0 +1,22 @@
+---
+// src/components/SearchBar.astro
+---
+<form id="search-form" method="GET" action="/posts" class="flex h-10">
+  <input
+    type="text"
+    placeholder="Search"
+    class="min-w-0 flex-1 border border-slate-200 px-3 text-sm outline-none focus:border-sky-500"
+    name="search"
+  />
+  <button class="grid w-11 place-items-center bg-sky-500 text-white hover:bg-sky-600" aria-label="Search">
+    <span aria-hidden="true">⌕</span>
+  </button>
+</form>
+
+<script>
+  const form = document.getElementById('search-form');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+    });
+  }
+</script>

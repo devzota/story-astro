@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import LatestPosts from '../components/LatestPosts.astro';
+import { getAllPosts, getCategories } from '../lib/queries';
+
+const { posts } = await getAllPosts();
+const categories = await getCategories();
+---
+
+<BaseLayout>
+  <main class="mx-auto max-w-[1140px] px-4 py-4">
+    <Hero posts={posts} />
+  </main>
+  <LatestPosts posts={posts} categoryList={categories} title="Latest Posts" />
+</BaseLayout>
