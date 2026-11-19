@@ -18,6 +18,14 @@ export type Post = {
   author: number;
   categories: number[];
   featured_media: number;
+  _embedded?: {
+    "wp:featuredmedia"?: Array<{
+      source_url: string;
+      media_details?: {
+        sizes?: Record<string, { source_url: string }>;
+      };
+    }>;
+  };
 }
 
 // Yoast

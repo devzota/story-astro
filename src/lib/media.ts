@@ -59,6 +59,7 @@ export function getPostImage(
   const raw =
     extended.yoast_head_json?.thumbnail_url ||
     extended.yoast_head_json?.og_image?.[0]?.url ||
+    post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
     "";
 
   if (!raw || !wordpressUrl) return raw;

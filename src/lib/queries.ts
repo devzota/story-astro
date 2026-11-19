@@ -9,6 +9,7 @@ export async function getAllPosts(pageNumber: number = 1, perPage: number = 10, 
   }
 
   const params = new URLSearchParams({
+    _embed: 'true',
     per_page: perPage.toString(),
     page: pageNumber.toString(),
     search: searchTerm,
@@ -25,7 +26,7 @@ export async function getAllPosts(pageNumber: number = 1, perPage: number = 10, 
 }
 
 export async function getPostBySlug(slug: string): Promise<ExtendedPost | null> {
-  const response = await fetch(`${baseUrl}/wp-json/wp/v2/posts?slug=${slug}`);
+  const response = await fetch(`${baseUrl}/wp-json/wp/v2/posts?slug=${slug}&_embed=true`);
   const post = await response.json();
   return post[0] || null;
 }
